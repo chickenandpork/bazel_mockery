@@ -2,7 +2,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_context", "go_path", "g
 load("@io_bazel_rules_go//go/private:providers.bzl", "GoLibrary", "GoPath", "GoSource")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 
-_MOCKERY_TOOL = "@com_github_vektra_mockery//cmd/mockery:mockery"
+_MOCKERY_TOOL = "@com_github_vektra_mockery_v2//:v2"
 _TESTIFY_MOCK_LIB = "@com_github_stretchr_testify//mock:go_default_library"
 
 _LIB_DEFAULT_LABEL = "go_default_library"
@@ -58,12 +58,12 @@ def go_mockery_without_library(src, interfaces, visibility, **kwargs):
         visibility = visibility,
     )
 
-def _go_mockery_impl(ctx):
-    args = ["-dir", "$GOPATH/src/" + ctx.attr.src[GoLibrary].importpath]
-    args += ["-outpkg", ctx.attr.outpkg]
-    args += ["-output", ctx.outputs.outputs[0].dirname ]
-    args += ["-name", "\"" + "|".join(ctx.attr.interfaces) + "\""]
-    args += ["-case", ctx.attr.case]
+def _go_mockery_impl(ctx): # $GOPATH/src/github.com/chickenandpork/bazel-go-mockery
+    args = ["--dir", "./" + ctx.attr.src[GoLibrary].label.workspace_root]
+    args += ["--outpkg", ctx.attr.outpkg]
+    args += ["--output", ctx.outputs.outputs[0].dirname ]
+    args += ["--name", "\"" + "|".join(ctx.attr.interfaces) + "\""]
+    args += ["--case", ctx.attr.case]
 
     _go_tool_run_shell_stdout(
         ctx = ctx,
